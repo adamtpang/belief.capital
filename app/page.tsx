@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const principles = [
   {
     title: "Many small, uncorrelated edges",
@@ -9,7 +11,7 @@ const principles = [
   },
   {
     title: "Rigorous backtesting",
-    body: "Every strategy is tested against its actual constraints — fees, slippage, liquidity, resolution risk — before it touches real capital.",
+    body: "Every strategy is tested against its actual constraints: fees, slippage, liquidity, resolution risk, before it touches real capital.",
   },
   {
     title: "Capacity discipline",
@@ -28,16 +30,16 @@ export default function Home() {
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
       <header className="mb-16">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-widest text-white/50">
-          Status: research — no live trading yet
+          Status: research, no live trading yet
         </div>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           belief.capital
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
           An AI-driven trading system across prediction markets, onchain
-          rails, and eventually traditional venues — built on the
-          principles behind Renaissance Technologies' actual track record,
-          applied to markets that resolve once and vanish.
+          rails, and eventually traditional venues. Built on the principles
+          behind Renaissance Technologies' actual track record, applied to
+          markets that resolve once and vanish.
         </p>
       </header>
 
@@ -64,7 +66,7 @@ export default function Home() {
         <ul className="space-y-3 text-sm leading-relaxed text-white/70">
           {notes.map((n) => (
             <li key={n} className="flex gap-3">
-              <span className="text-white/30">&mdash;</span>
+              <span className="text-white/30">-</span>
               <span>{n}</span>
             </li>
           ))}
@@ -73,7 +75,13 @@ export default function Home() {
 
       <footer className="mt-auto flex flex-col gap-2 border-t border-white/10 pt-8 text-sm text-white/50">
         <p>
-          Follow the build or get in touch:{" "}
+          <Link
+            href="/research"
+            className="text-white/80 underline underline-offset-4 hover:text-white"
+          >
+            Read the research
+          </Link>{" "}
+          or get in touch:{" "}
           <a
             href="mailto:adamtpang@gmail.com"
             className="text-white/80 underline underline-offset-4 hover:text-white"

@@ -2,7 +2,7 @@
 
 **One-sentence purpose:** An AI-driven, multi-venue trading bot (Polymarket, Kalshi, onchain/crypto, potentially stocks) inspired by the best Polymarket traders and Jim Simons / Renaissance Technologies' quant principles.
 
-**Status (2026-08-15):** Domain owned. Pre-build / research stage — no code yet. On the standard North Star ladder (`AETHER_STANDARD.md` item 18) this is stage 0 of 6: the core loop doesn't exist yet. Treat as a "dormant — research/notes only" entry in `PROJECT_INDEX.md` until a real repo exists, then promote it to Active and add its one-line purpose there.
+**Status (2026-08-15):** Domain owned, GitHub repo live (`adamtpang/belief.capital`), landing page shipped (Next.js + Tailwind, honest pre-launch copy — no trading system exists yet). On the standard North Star ladder (`AETHER_STANDARD.md` item 18) this is still stage 0 of 6: the core loop (an actual trading strategy running against real or paper capital) doesn't exist. Promoted to Active in `PROJECT_INDEX.md`. Next real step is answering the open questions below, then building the first strategy branch, not more landing-page work.
 
 **Start here:** [`HANDOFF_FROM_polymarket-research.md`](./HANDOFF_FROM_polymarket-research.md) — full context, decisions, and open questions from the research session that produced this project. Read that first.
 

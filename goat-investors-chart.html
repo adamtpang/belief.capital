@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Investing GOAT Debate — Return vs. Longevity</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6; /* tier 1: audited / most-documented */
+    --series-2:       #eb6834; /* tier 2: press / investor-letter documented */
+    --series-3:       #1baf7a; /* tier 3: anecdotal / self-reported */
+    --gold:           #b8860b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --gold:           #e0b13a;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --series-3:       #199e70;
+    --gold:           #e0b13a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+  }
+  .viz-root {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 28px 40px;
+    background: var(--surface-1);
+  }
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px;
+    font: 12px system-ui, sans-serif;
+    background: var(--surface-1); color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; cursor: pointer;
+  }
+  h1 { font-size: 21px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .subtitle { font-size: 14px; color: var(--text-secondary); margin: 0 0 22px; max-width: 680px; line-height: 1.5; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 4px 0 8px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .axis-label { fill: var(--text-muted); font-size: 12px; }
+  .tick-label { fill: var(--text-muted); font-size: 11px; }
+  .grid-line { stroke: var(--gridline); stroke-width: 1; }
+  .baseline-line { stroke: var(--baseline); stroke-width: 1.5; stroke-dasharray: 3 4; }
+  .baseline-label { fill: var(--text-muted); font-size: 11px; }
+  .dot { stroke: var(--surface-1); stroke-width: 2; cursor: pointer; }
+  .dot.goat { stroke: var(--gold); stroke-width: 3; }
+  .dot-label { fill: var(--text-primary); font-size: 12px; }
+  .dot-label.goat { font-weight: 700; }
+  .dot-sub { fill: var(--text-muted); font-size: 10px; }
+  .leader { stroke: var(--text-muted); stroke-width: 1; opacity: 0.55; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 5;
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: 12.5px; line-height: 1.5;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    max-width: 240px; opacity: 0; transition: opacity 0.1s;
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip b { display: block; font-size: 13px; margin-bottom: 2px; }
+  .tooltip .tier-tag { display: inline-block; margin-top: 6px; font-size: 11px; color: var(--text-muted); }
+  .goat-callout {
+    fill: none; stroke: var(--gold); stroke-width: 1.4; stroke-dasharray: 2 3; opacity: 0.7;
+  }
+  .goat-callout-label { fill: var(--gold); font-size: 11.5px; font-weight: 600; }
+  footer { margin-top: 26px; font-size: 12px; color: var(--text-muted); line-height: 1.6; max-width: 760px; }
+  footer .excluded { margin-top: 10px; }
+  table.data-table {
+    width: 100%; border-collapse: collapse; margin-top: 28px; font-size: 12.5px;
+  }
+  table.data-table caption {
+    text-align: left; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;
+  }
+  table.data-table th, table.data-table td {
+    text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--gridline);
+  }
+  table.data-table th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.02em; }
+  table.data-table td.num { font-variant-numeric: tabular-nums; }
+  table.data-table tr.goat td { font-weight: 700; }
+  .tier-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()">Toggle dark mode</button>
+<div class="viz-root" id="root">
+  <h1>The investing GOAT debate: return vs. longevity</h1>
+  <p class="subtitle">Annualized return (CAGR) plotted against years of sustained track record, for the traders and investors most commonly cited as the greatest of all time. Simons wins on pure compounding rate; Buffett wins on doing it three times as long, at vastly greater scale — which is the actual shape of the debate.</p>
+
+  <div class="legend" id="legend"></div>
+
+  <div style="position:relative;">
+    <svg id="chart" viewBox="0 0 1000 660" role="img" aria-label="Scatter plot of annualized return versus track record length for legendary investors"></svg>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <footer id="footnote"></footer>
+
+  <table class="data-table" id="dataTable">
+    <caption>Full dataset (table view)</caption>
+    <thead>
+      <tr><th>Investor / fund</th><th>Ann. return</th><th>Track record</th><th>Years</th><th>Reliability</th></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+const DATA = [
+  { name: "Jim Simons", fund: "Medallion / Renaissance Technologies", pct: 66.1, years: 31, period: "1988–2018, no losing year", tier: 1, goat: true, note: "Gross figure; capped at ~$10B AUM by design." },
+  { name: "Warren Buffett", fund: "Berkshire Hathaway", pct: 19.7, years: 60, period: "1965–2025", tier: 1, goat: true, note: "Most rigorously documented figure in finance — audited annual letters." },
+  { name: "Peter Lynch", fund: "Fidelity Magellan", pct: 29.2, years: 13, period: "1977–1990, no down year", tier: 1, goat: false, note: "Public mutual fund, SEC-reported NAV." },
+  { name: "Bill Ackman", fund: "Pershing Square Holdings", pct: 15.9, years: 22, period: "2004–2026", tier: 1, goat: false, note: "Publicly listed vehicle (Europe) — verifiable NAV." },
+  { name: "Walter Schloss", fund: "Walter J. Schloss Associates", pct: 16.1, years: 45, period: "1956–2000ish, net to LPs", tier: 1, goat: false, note: "Sourced via Buffett's own 1984 'Superinvestors' essay." },
+  { name: "Charlie Munger", fund: "Wheeler, Munger & Co.", pct: 19.8, years: 13, period: "1962–1975", tier: 2, goat: false, note: "Predates the Berkshire partnership with Buffett." },
+  { name: "Julian Robertson", fund: "Tiger Management", pct: 31.7, years: 18, period: "1980–1998 peak, net of fees", tier: 2, goat: false, note: "Fund unwound in 2000 after large losses." },
+  { name: "Ed Thorp", fund: "Princeton Newport Partners", pct: 20.0, years: 19, period: "1969–1988, no down quarter", tier: 2, goat: false, note: "Net of fees; shut down amid an unrelated, later-dropped investigation." },
+  { name: "Michael Steinhardt", fund: "Steinhardt Partners", pct: 24.5, years: 28, period: "1967–1995, net of fees", tier: 2, goat: false, note: "Roughly triple the S&P 500 over the period." },
+  { name: "Carl Icahn", fund: "Icahn / activist investing", pct: 31.0, years: 43, period: "1968–2011", tier: 2, goat: false, note: "Blends leveraged holding-company returns with activist stakes — not a pure fund CAGR." },
+  { name: "Joel Greenblatt", fund: "Gotham Capital", pct: 50.0, years: 10, period: "1985–1994, gross", tier: 2, goat: false, note: "Gross figure; net return is reported inconsistently across sources." },
+  { name: "George Soros", fund: "Quantum Fund", pct: 31.0, years: 30, period: "~1969–2000", tier: 3, goat: false, note: "Cited 30–32% depending on source; post-2000 returns fell sharply." },
+  { name: "Stanley Druckenmiller", fund: "Duquesne Capital", pct: 30.0, years: 30, period: "1981–2010, no losing year (claimed)", tier: 3, goat: false, note: "Widely repeated figure with no public primary source found." },
+  { name: "Ray Dalio", fund: "Bridgewater Pure Alpha", pct: 10.0, years: 32, period: "1991–2024 est.", tier: 3, goat: false, note: "Firm itself avoids a precise number; performance has visibly decayed as AUM grew to ~$150B." },
+  { name: "Seth Klarman", fund: "Baupost Group", pct: 20.0, years: 44, period: "1982–present", tier: 3, goat: false, note: "Wikipedia flags its own cited figure as unsourced." },
+  { name: "Nick Sleep", fund: "Nomad Investment Partnership", pct: 20.0, years: 13, period: "2001–2014", tier: 3, goat: false, note: "Self-reported in partner letters, never independently audited." }
+];
+
+const TIERS = {
+  1: { label: "Audited / most-documented", color: "var(--series-1)" },
+  2: { label: "Press / investor-letter documented", color: "var(--series-2)" },
+  3: { label: "Anecdotal / self-reported, disputed figures", color: "var(--series-3)" }
+};
+
+// manual jitter for near-identical points so markers/labels don't fully overlap
+const JITTER = {
+  "Stanley Druckenmiller": { dx: -11, dy: 0 },
+  "George Soros": { dx: 11, dy: -6 },
+  "Nick Sleep": { dx: 0, dy: -11 },
+  "Charlie Munger": { dx: 0, dy: 11 }
+};
+
+// per-point label placement: [dx, dy, anchor]
+const LABELS = {
+  "Jim Simons": [10, -8, "start"],
+  "Warren Buffett": [-10, -12, "end"],
+  "Peter Lynch": [10, 4, "start"],
+  "Bill Ackman": [10, 16, "start"],
+  "Walter Schloss": [10, 4, "start"],
+  "Charlie Munger": [-10, 18, "end"],
+  "Julian Robertson": [-10, -10, "end"],
+  "Ed Thorp": [-10, 16, "end"],
+  "Michael Steinhardt": [10, -10, "start"],
+  "Carl Icahn": [10, -8, "start"],
+  "Joel Greenblatt": [10, -8, "start"],
+  "George Soros": [10, -8, "start"],
+  "Stanley Druckenmiller": [-10, 16, "end"],
+  "Ray Dalio": [10, 16, "start"],
+  "Seth Klarman": [10, 4, "start"],
+  "Nick Sleep": [-10, -10, "end"]
+};
+
+const W = 1000, H = 660;
+const M = { l: 66, r: 34, t: 30, b: 64 };
+const plotW = W - M.l - M.r, plotH = H - M.t - M.b;
+const X_MAX = 65, Y_MAX = 70;
+
+function xScale(years) { return M.l + (years / X_MAX) * plotW; }
+function yScale(pct) { return M.t + (1 - pct / Y_MAX) * plotH; }
+
+const svg = document.getElementById("chart");
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+// gridlines + axes
+const xTicks = [0, 10, 20, 30, 40, 50, 60];
+const yTicks = [0, 10, 20, 30, 40, 50, 60, 70];
+xTicks.forEach(t => {
+  svg.appendChild(el("line", { class: "grid-line", x1: xScale(t), x2: xScale(t), y1: M.t, y2: H - M.b }));
+  const lbl = el("text", { class: "tick-label", x: xScale(t), y: H - M.b + 20, "text-anchor": "middle" });
+  lbl.textContent = t;
+  svg.appendChild(lbl);
+});
+yTicks.forEach(t => {
+  svg.appendChild(el("line", { class: "grid-line", x1: M.l, x2: W - M.r, y1: yScale(t), y2: yScale(t) }));
+  const lbl = el("text", { class: "tick-label", x: M.l - 12, y: yScale(t) + 4, "text-anchor": "end" });
+  lbl.textContent = t + "%";
+  svg.appendChild(lbl);
+});
+
+// axis labels
+const xAxisLabel = el("text", { class: "axis-label", x: M.l + plotW / 2, y: H - 14, "text-anchor": "middle" });
+xAxisLabel.textContent = "Years of sustained track record  →";
+svg.appendChild(xAxisLabel);
+const yAxisLabel = el("text", { class: "axis-label", x: -( M.t + plotH / 2), y: 20, "text-anchor": "middle", transform: "rotate(-90)" });
+yAxisLabel.textContent = "Annualized return  →";
+svg.appendChild(yAxisLabel);
+
+// S&P 500 baseline reference line
+const baseY = yScale(10);
+svg.appendChild(el("line", { class: "baseline-line", x1: M.l, x2: W - M.r, y1: baseY, y2: baseY }));
+const baseLbl = el("text", { class: "baseline-label", x: W - M.r, y: baseY - 8, "text-anchor": "end" });
+baseLbl.textContent = "S&P 500 long-run average, ~10%/yr";
+svg.appendChild(baseLbl);
+
+// GOAT connector (Simons <-> Buffett)
+const simons = DATA.find(d => d.name === "Jim Simons");
+const buffett = DATA.find(d => d.name === "Warren Buffett");
+svg.appendChild(el("path", {
+  class: "goat-callout",
+  d: `M ${xScale(simons.years)} ${yScale(simons.pct)} Q ${(xScale(simons.years)+xScale(buffett.years))/2} ${Math.min(yScale(simons.pct),yScale(buffett.pct)) - 40} ${xScale(buffett.years)} ${yScale(buffett.pct)}`
+}));
+const midX = (xScale(simons.years) + xScale(buffett.years)) / 2;
+const calloutLabel = el("text", { class: "goat-callout-label", x: midX, y: Math.min(yScale(simons.pct), yScale(buffett.pct)) - 46, "text-anchor": "middle" });
+calloutLabel.textContent = "the GOAT debate";
+svg.appendChild(calloutLabel);
+
+// points
+DATA.forEach(d => {
+  const jit = JITTER[d.name] || { dx: 0, dy: 0 };
+  const cx = xScale(d.years) + jit.dx;
+  const cy = yScale(d.pct) + jit.dy;
+  const color = TIERS[d.tier].color;
+  const r = d.goat ? 9 : 6.5;
+
+  const dot = el("circle", { class: "dot" + (d.goat ? " goat" : ""), cx, cy, r, fill: color });
+  dot.addEventListener("mouseenter", (e) => showTooltip(e, d));
+  dot.addEventListener("mousemove", moveTooltip);
+  dot.addEventListener("mouseleave", hideTooltip);
+  svg.appendChild(dot);
+
+  const [ldx, ldy, anchor] = LABELS[d.name] || [10, -8, "start"];
+  const label = el("text", { class: "dot-label" + (d.goat ? " goat" : ""), x: cx + ldx, y: cy + ldy, "text-anchor": anchor });
+  label.textContent = d.name;
+  svg.appendChild(label);
+});
+
+// legend
+const legendEl = document.getElementById("legend");
+Object.values(TIERS).forEach(t => {
+  const item = document.createElement("div");
+  item.className = "legend-item";
+  item.innerHTML = `<span class="swatch" style="background:${t.color}"></span>${t.label}`;
+  legendEl.appendChild(item);
+});
+
+// tooltip
+const tooltip = document.getElementById("tooltip");
+function showTooltip(e, d) {
+  tooltip.innerHTML = `<b>${d.name}</b>${d.fund}<br>${d.pct}%/yr over ${d.years} years<br><span style="color:var(--text-secondary)">${d.period}</span><br>${d.note}<span class="tier-tag">${TIERS[d.tier].label}</span>`;
+  tooltip.classList.add("show");
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  const rect = document.getElementById("root").getBoundingClientRect();
+  tooltip.style.left = (e.clientX - rect.left + 16) + "px";
+  tooltip.style.top = (e.clientY - rect.top + 10) + "px";
+}
+function hideTooltip() { tooltip.classList.remove("show"); }
+
+// data table
+const tbody = document.getElementById("tableBody");
+DATA.slice().sort((a, b) => b.pct - a.pct).forEach(d => {
+  const tr = document.createElement("tr");
+  if (d.goat) tr.className = "goat";
+  tr.innerHTML = `<td><span class="tier-dot" style="background:${TIERS[d.tier].color}"></span>${d.name} — ${d.fund}</td>
+    <td class="num">${d.pct}%</td>
+    <td>${d.period}</td>
+    <td class="num">${d.years}</td>
+    <td>${TIERS[d.tier].label}</td>`;
+  tbody.appendChild(tr);
+});
+
+// footnote
+document.getElementById("footnote").innerHTML = `Figures are the most commonly cited CAGR per investor across financial journalism, investor letters, and (for Buffett, Lynch, and Ackman) audited public reporting — basis (gross/net) varies by source and is noted per point on hover. Tier 3 figures in particular should be read as "widely repeated" rather than "independently verified."
+<div class="excluded"><b>Left off the chart:</b> Ludwig Jesselson (Phillip Brothers) ran an operating commodities trading house, not a fund — no CAGR exists to plot. Paul Tudor Jones and David Tepper have no clean long-run annualized figure in public sources (only year-by-year spikes). Mark Spitznagel / Universa is a tail-risk hedge, not a standalone long-only return — not comparable on this axis.</div>`;
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme");
+  root.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+}
+</script>
+</body>
+</html>

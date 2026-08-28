@@ -19,8 +19,9 @@ export async function generateMetadata({
   const doc = getResearchDoc(slug);
   if (!doc) return {};
   return {
-    title: `${doc.title} | belief.capital`,
+    title: doc.title,
     description: doc.description,
+    alternates: { canonical: `/research/${doc.slug}` },
   };
 }
 
@@ -103,7 +104,7 @@ export default async function ResearchDocPage({
   const content = fs.readFileSync(filePath, "utf-8");
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
+    <main id="main-content" className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
       <Link
         href="/research"
         className="mb-10 text-sm text-white/50 underline underline-offset-4 hover:text-white"
@@ -115,6 +116,6 @@ export default async function ResearchDocPage({
           {content}
         </ReactMarkdown>
       </article>
-    </div>
+    </main>
   );
 }

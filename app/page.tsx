@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
+import { HOME_DESCRIPTION, HOME_TITLE } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
+  alternates: { canonical: "/" },
+};
 
 const principles = [
   {
@@ -27,7 +36,10 @@ const notes = [
 
 export default function Home() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
+    <main
+      id="main-content"
+      className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24"
+    >
       <header className="mb-16">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-widest text-white/50">
           Status: research, no live trading yet
@@ -37,11 +49,56 @@ export default function Home() {
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
           An AI-driven trading system across prediction markets, onchain
-          rails, and eventually traditional venues. Built on the principles
-          behind Renaissance Technologies' actual track record, applied to
-          markets that resolve once and vanish.
+          rails, and eventually traditional venues. The public work asks which
+          quantitative methods can transfer to markets that resolve once and
+          vanish, and where the operational constraints make that impossible.
         </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/research"
+            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-white/85"
+          >
+            Start with the research
+          </Link>
+          <Link
+            href="/contact"
+            className="rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white hover:border-white/40"
+          >
+            Contact Adam
+          </Link>
+        </div>
       </header>
+
+      <section className="mb-16" aria-labelledby="available-now">
+        <h2
+          id="available-now"
+          className="mb-4 text-sm font-medium uppercase tracking-widest text-white/50"
+        >
+          What is available now
+        </h2>
+        <div className="space-y-4 leading-relaxed text-white/70">
+          <p>
+            belief.capital is a personal research project for builders and
+            researchers evaluating market structure, data quality, execution
+            risk, and agent-native trading infrastructure. The public offer is
+            access to the project&apos;s research notes and a direct channel for
+            corrections or relevant technical context.
+          </p>
+          <p>
+            As of August 15, 2026, the library contains 3 long-form research
+            notes, 0 live trading strategies, and 0 outside investors. There is
+            no paid plan, trial, advisory service, managed account, or quote to
+            request; belief.capital is not accepting outside capital.
+          </p>
+          <p>
+            The initial research compares 7 candidate strategy branches, maps
+            the venues an autonomous agent could use, and separates trading-bot
+            products with documented evidence from products supported mainly by
+            marketing claims. Each note links to its underlying sources so
+            readers can check the work rather than rely on a summary.
+          </p>
+        </div>
+      </section>
 
       <section className="mb-16">
         <h2 className="mb-6 text-sm font-medium uppercase tracking-widest text-white/50">
@@ -73,24 +130,7 @@ export default function Home() {
         </ul>
       </section>
 
-      <footer className="mt-auto flex flex-col gap-2 border-t border-white/10 pt-8 text-sm text-white/50">
-        <p>
-          <Link
-            href="/research"
-            className="text-white/80 underline underline-offset-4 hover:text-white"
-          >
-            Read the research
-          </Link>{" "}
-          or get in touch:{" "}
-          <a
-            href="mailto:adamtpang@gmail.com"
-            className="text-white/80 underline underline-offset-4 hover:text-white"
-          >
-            adamtpang@gmail.com
-          </a>
-        </p>
-        <p className="text-xs text-white/30">belief.capital</p>
-      </footer>
-    </div>
+      <SiteFooter />
+    </main>
   );
 }

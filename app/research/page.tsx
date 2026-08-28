@@ -1,15 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { researchDocs } from "@/lib/research";
 
-export const metadata = {
-  title: "Research | belief.capital",
+export const metadata: Metadata = {
+  title: "Research",
   description:
     "Research notes from building belief.capital, published as they're written.",
+  alternates: { canonical: "/research" },
 };
 
 export default function ResearchIndex() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
+    <main id="main-content" className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-16 sm:py-24">
       <header className="mb-16">
         <Link
           href="/"
@@ -71,6 +73,6 @@ export default function ResearchIndex() {
           </a>
         </p>
       </footer>
-    </div>
+    </main>
   );
 }

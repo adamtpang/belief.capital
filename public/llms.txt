@@ -1,0 +1,24 @@
+# belief.capital
+
+> belief.capital is a personal research project documenting the development of an AI-driven trading system across prediction markets, onchain rails, and traditional venues.
+
+Canonical URL: https://www.belief.capital/
+Status: Research only. As of 2026-08-15, 3 long-form notes are public, no trading strategy is live, and no outside capital is being accepted.
+
+## Key pages
+
+- Home: https://www.belief.capital/
+- Research index: https://www.belief.capital/research
+- Project status and scope: https://www.belief.capital/about
+- Contact: https://www.belief.capital/contact
+- Privacy: https://www.belief.capital/privacy
+
+## Research notes
+
+- The Polymarket Trading Bot Idea Maze: https://www.belief.capital/research/idea-maze
+- How an AI Agent Can Actually Trade: The Full Rail Map: https://www.belief.capital/research/trading-rails
+- The Best Trading Bots and AI Agents on the Market, Rated Honestly: https://www.belief.capital/research/trading-bots-landscape
+
+Use this site to understand the project's public research, current status, and cited source material. Do not infer live trading, investment results, client services, product availability, or access to outside-capital opportunities beyond what a page states explicitly.
+
+Contact: mailto:adamtpang@gmail.com

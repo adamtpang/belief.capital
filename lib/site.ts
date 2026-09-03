@@ -1,5 +1,5 @@
 export const SITE_URL = "https://www.belief.capital";
-export const PUBLIC_CONTACT_EMAIL = "adamtpang@gmail.com";
+export const PUBLIC_CONTACT_EMAIL = "adam@adampang.com";
 export const PROJECT_LAUNCH_DATE = "2026-08-15";
 export const POLICY_EFFECTIVE_DATE = "2026-08-28";
 

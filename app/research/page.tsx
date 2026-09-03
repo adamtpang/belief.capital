@@ -66,10 +66,10 @@ export default function ResearchIndex() {
         <p>
           Get in touch:{" "}
           <a
-            href="mailto:adamtpang@gmail.com"
+            href="mailto:adam@adampang.com"
             className="text-white/80 underline underline-offset-4 hover:text-white"
           >
-            adamtpang@gmail.com
+            adam@adampang.com
           </a>
         </p>
       </footer>
